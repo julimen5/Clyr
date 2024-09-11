@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  team      Team       @relation(fields: [teamId], references: [id])
+  teamId    String
+  cards     Card[]
+  name      String
+  email     String
+  phone     String
+  role      Role
+  approvers Approver[]
+}
+
+model Team {
+  id           String        @id @default(uuid())
+  name         String
+  users        User[]
+  cards        Card[]
+  transactions Transaction[]
+  policies     Policy[]
+}
+
+model Card {
+  id           String        @id @default(uuid())
+  team         Team          @relation(fields: [teamId], references: [id])
+  teamId       String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  transactions Transaction[]
+  network      Network       @default(VISA)
+  las4         String
+  cardStatus   CardStatus    @default(PENDING)
+}
+
+model Transaction {
+  id               String            @id @default(uuid())
+  team             Team              @relation(fields: [teamId], references: [id])
+  teamId           String
+  card             Card              @relation(fields: [cardId], references: [id])
+  cardId           String
+  amount           Float
+  datetime         DateTime
+  merchant         String
+  status           TransactionStatus @default(PENDING)
+  approvalRequests ApprovalRequest[]
+}
+
+model Approver {
+  id               String            @id @default(uuid())
+  user             User?             @relation(fields: [userId], references: [id])
+  userId           String?
+  role             Role?
+  policy           Policy            @relation(fields: [policyId], references: [id])
+  policyId         String
+  ApprovalRequests ApprovalRequest[]
+
+  @@unique([userId, policyId, role])
+}
+
+model ApprovalRequest {
+  id            String            @id @default(uuid())
+  policy        Policy            @relation(fields: [policyId], references: [id])
+  policyId      String
+  approver      Approver          @relation(fields: [approverId], references: [id])
+  approverId    String
+  transaction   Transaction       @relation(fields: [transactionId], references: [id])
+  transactionId String
+  status        TransactionStatus @default(PENDING)
+}
+
+model Policy {
+  id               String            @id @default(uuid())
+  team             Team              @relation(fields: [teamId], references: [id])
+  teamId           String
+  isForAll         Boolean           @default(false)
+  conditions       Condition[]
+  approvers        Approver[]
+  approvalRequests ApprovalRequest[]
+}
+
+model Condition {
+  id       String         @id @default(uuid())
+  policy   Policy         @relation(fields: [policyId], references: [id])
+  policyId String
+  field    PolicyField
+  operator PolicyOperator
+  value    String
+}
+
+enum PolicyField {
+  amount
+  merchant
+  cardId
+  userId
+}
+
+enum PolicyOperator {
+  EQUALS
+  GREATER_THAN
+  LESS_THAN
+}
+
+enum Role {
+  USER
+  APPROVER
+  ADMIN
+}
+
+enum Network {
+  MC
+  VISA
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CardStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+}
