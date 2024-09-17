@@ -6,18 +6,20 @@ import { seed as approverRequestSeed } from './seeders/approver-request.seed';
 import { seed as policySeed } from './seeders/policy.seed';
 import { seed as transactionSeed } from './seeders/transaction.seed';
 import { seed as conditionSeed } from './seeders/condition.seed';
+import { seed as hierarchyRequirementsSeed } from './seeders/hierarchyRequirements.seed';
 
 const seed = async () => {
-    await teamSeed();
-    await userSeed();
-    await cardSeed();
-    await transactionSeed();
-    await policySeed();
-    await approverSeed();
-    await approverRequestSeed();
-    await conditionSeed();
+  // await teamSeed();
+  // await userSeed();
+  // await cardSeed();
+  // await transactionSeed();
+  // await policySeed();
+  // await approverSeed();
+  // await approverRequestSeed();
+  // await conditionSeed();
+  // await hierarchyRequirementsSeed();
 };
 
-seed().then(() =>  {console.log("Seeding completed")});
-
-
+seed().then(() => {
+  console.log('Seeding completed');
+});

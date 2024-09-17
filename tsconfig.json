@@ -1,18 +1,22 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "module": "es2020",
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "noEmit": true,
-
+    "strictNullChecks": false,
     "outDir": "dist",
-
+    "typeRoots": ["./node_modules/@types"],
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitAny": true,
-
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
@@ -22,6 +26,6 @@
     "resolveFullPaths": true,
     "verbose": false
   },
-  "include": ["src"],
+  "include": ["src", "src/**/*.json"],
   "exclude": ["node_modules"]
 }

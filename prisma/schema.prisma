@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  team      Team       @relation(fields: [teamId], references: [id])
-  teamId    String
-  cards     Card[]
-  name      String
-  email     String
-  phone     String
-  role      Role
-  approvers Approver[]
+  id               String            @id @default(uuid())
+  team             Team              @relation(fields: [teamId], references: [id])
+  teamId           String
+  cards            Card[]
+  name             String
+  email            String
+  phone            String
+  role             Role
+  approvers        Approver[]
+  ApprovalRequests ApprovalRequest[]
 }
 
 model Team {
@@ -60,6 +61,7 @@ model Approver {
   role             Role?
   policy           Policy            @relation(fields: [policyId], references: [id])
   policyId         String
+  hierarchy        Int               @default(0)
   ApprovalRequests ApprovalRequest[]
 
   @@unique([userId, policyId, role])
@@ -74,16 +76,27 @@ model ApprovalRequest {
   transaction   Transaction       @relation(fields: [transactionId], references: [id])
   transactionId String
   status        TransactionStatus @default(PENDING)
+  approvedBy    User?             @relation(fields: [approvedById], references: [id])
+  approvedById  String?
 }
 
 model Policy {
-  id               String            @id @default(uuid())
-  team             Team              @relation(fields: [teamId], references: [id])
-  teamId           String
-  isForAll         Boolean           @default(false)
-  conditions       Condition[]
-  approvers        Approver[]
-  approvalRequests ApprovalRequest[]
+  id                    String                 @id @default(uuid())
+  team                  Team                   @relation(fields: [teamId], references: [id])
+  teamId                String
+  isForAll              Boolean                @default(false)
+  conditions            Condition[]
+  approvers             Approver[]
+  approvalRequests      ApprovalRequest[]
+  hierarchyRequirements HierarchyRequirement[]
+}
+
+model HierarchyRequirement {
+  id           String @id @default(uuid())
+  policy       Policy @relation(fields: [policyId], references: [id])
+  policyId     String
+  hierarchy    Int
+  minApprovers Int
 }
 
 model Condition {
@@ -92,7 +105,7 @@ model Condition {
   policyId String
   field    PolicyField
   operator PolicyOperator
-  value    String
+  value    String // Using string even for numbers to simplify the database. Validation should be done on the application level.
 }
 
 enum PolicyField {
