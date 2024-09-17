@@ -28,12 +28,6 @@ npm run test
 5. Used `x-auth` header to simulate a token and add validation and security
 
 
-#### How to connect to mail trap
-```
-user: mendezj.dev@gmail.com
-password: Clyr1234.
-```
-
 
 #### How it works?
 When a transaction is received by the webhook it will first create it on the database and then fire a `processTransaction` event.
